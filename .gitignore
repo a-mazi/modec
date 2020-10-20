@@ -1,0 +1,8 @@
+.*
+!.gitignore
+src/tryouts/
+bin/
+debug/
+inc/ui/
+src/mo/
+*.orig
