@@ -33,11 +33,10 @@ public:
   void attachMotionDetector(const MotionDetectorPtr& motionDetector);
   void attachVideoDevice(const char* videoDevice);
 
-  // slots
-  void mainWindowOpened();
-  void mainWindowClosed();
-  void showSettingsWindow(bool isTriggered);
-  void alphaChange(double value);
+  void slotMainWindowOpened();
+  void slotMainWindowClosed();
+  void slotShowSettingsWindow(bool isTriggered);
+  void slotAlphaChange(double value);
 
   void notifyMarkers(FrameId frameId, Markers markers) final;
   void notifyMotion(FrameId frameId, DecisionWeight decisionWeight) final;

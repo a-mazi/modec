@@ -29,28 +29,14 @@ public:
 
   void setupUi(QWidget *settingsWindow);
 
-  // slots
-  void alphaSpinBoxChange(double alphaValue);
-  void alphaSliderChange();
+  void slotAlphaSpinBoxChange(double alphaValue);
+  void slotAlphaSliderChange();
 
   signals:
-  void alphaChanged(double alphaValue);
+  void signalAlphaChanged(double alphaValue);
 
 private:
   QAction actionCloseWindow;
-
-  double alphaSpinBoxMin;
-  double alphaSpinBoxMax;
-  int alphaSliderMin;
-  int alphaSliderMax;
-
-  void detectAlphaSpinBoxLimits();
-  void detectAlphaSliderLimits();
-
-  void setSliderFromSpinBox(double value, QDoubleSpinBox* spinBox, double spinBoxMin, double spinBoxMax,
-                                          QSlider*        slider,  int    sliederMin, int    sliderMax);
-  double setSpinBoxFromSlider(            QSlider*        slider,  int    sliederMin, int    sliderMax,
-                                          QDoubleSpinBox* spinBox, double spinBoxMin, double spinBoxMax);
 };
 
 using UiSettingsWindowPtr = std::shared_ptr<UiSettingsWindow>;

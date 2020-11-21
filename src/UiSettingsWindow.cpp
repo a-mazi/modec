@@ -13,6 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include <mo/UiSettingsWindow.h>
+#include <UiToolBox.h>
 
 UiSettingsWindow::UiSettingsWindow() :
   actionCloseWindow{this}
@@ -28,58 +29,19 @@ void UiSettingsWindow::setupUi(QWidget* settingsWindow)
   addAction(&actionCloseWindow);
   QObject::connect(&actionCloseWindow, &QAction::triggered, [&]{close();});
 
-  detectAlphaSpinBoxLimits();
-  detectAlphaSliderLimits();
-
   QObject::connect(alphaSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-                   this,         &UiSettingsWindow::alphaSpinBoxChange);
-  QObject::connect(alphaSlider, &QSlider::valueChanged, this, &UiSettingsWindow::alphaSliderChange);
+                   this,         &UiSettingsWindow::slotAlphaSpinBoxChange);
+  QObject::connect(alphaSlider, &QSlider::valueChanged, this, &UiSettingsWindow::slotAlphaSliderChange);
 }
 
-void UiSettingsWindow::alphaSpinBoxChange(double alphaValue)
+void UiSettingsWindow::slotAlphaSpinBoxChange(double alphaSpinBoxValue)
 {
-  setSliderFromSpinBox(alphaValue, alphaSpinBox, alphaSpinBoxMin, alphaSpinBoxMax,
-                                   alphaSlider,  alphaSliderMin,  alphaSliderMax);
-  emit alphaChanged(alphaValue);
+  UiToolBox::updateAFromB(alphaSlider, alphaSpinBox);
+  emit signalAlphaChanged(alphaSpinBoxValue);
 }
 
-void UiSettingsWindow::alphaSliderChange()
+void UiSettingsWindow::slotAlphaSliderChange()
 {
-  double alphaValue = setSpinBoxFromSlider(alphaSlider,  alphaSliderMin,  alphaSliderMax,
-                                           alphaSpinBox, alphaSpinBoxMin, alphaSpinBoxMax);
-  emit alphaChanged(alphaValue);
-}
-
-void UiSettingsWindow::detectAlphaSpinBoxLimits()
-{
-  alphaSpinBoxMin = alphaSpinBox->minimum();
-  alphaSpinBoxMax = alphaSpinBox->maximum();
-}
-
-void UiSettingsWindow::detectAlphaSliderLimits()
-{
-  alphaSliderMin = alphaSlider->minimum();
-  alphaSliderMax = alphaSlider->maximum();
-}
-
-void UiSettingsWindow::setSliderFromSpinBox(double value, QDoubleSpinBox* spinBox, double spinBoxMin, double spinBoxMax,
-                                            QSlider* slider, int sliderMin, int sliderMax)
-{
-  double valuePercent = (value - spinBoxMin) / (spinBoxMax - spinBoxMin);
-  int sliderValue = sliderMin + valuePercent * (sliderMax - sliderMin);
-  slider->blockSignals(true);
-  slider->setValue(sliderValue);
-  slider->blockSignals(false);
-}
-
-double UiSettingsWindow::setSpinBoxFromSlider(QSlider* slider, int sliderMin, int sliderMax, QDoubleSpinBox* spinBox,
-                                              double spinBoxMin, double spinBoxMax)
-{
-  int sliderValue = slider->value();
-  double valuePercent = static_cast<double>(sliderValue - sliderMin) / (sliderMax - sliderMin);
-  double value = spinBoxMin + valuePercent * (spinBoxMax - spinBoxMin);
-  spinBox->blockSignals(true);
-  spinBox->setValue(value);
-  spinBox->blockSignals(false);
-  return value;
+  UiToolBox::updateAFromB(alphaSpinBox, alphaSlider);
+  emit signalAlphaChanged(alphaSpinBox->value());
 }

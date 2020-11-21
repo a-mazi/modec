@@ -13,32 +13,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
-#include <mo/UiMainWindow.h>
-#include <QtGui/QCloseEvent>
+#pragma once
 
-UiMainWindow::UiMainWindow() :
-    QMainWindow(0, Qt::Window),
-    actionShowSettingsWindow{this}
+class UiToolBox
 {
-  setupUi(this);
-}
+public:
+  template<class A, class B>
+  static void updateAFromB(A*& a, B*& b);
+};
 
-void UiMainWindow::setupUi(QMainWindow* mainWindow)
+template<class A, class B>
+inline void UiToolBox::updateAFromB(A*& a, B*& b)
 {
-  Ui_MainWindow::setupUi(mainWindow);
+  auto aMin = a->minimum();
+  auto aMax = a->maximum();
+  auto bMin = b->minimum();
+  auto bMax = b->maximum();
 
-  actionShowSettingsWindow.setShortcut(Qt::Key_F2);
-  addAction(&actionShowSettingsWindow);
-}
+  auto bValue = b->value();
+  double percent = static_cast<double>(bValue - bMin) / (bMax - bMin);
+  auto aValue = aMin + percent * (aMax - aMin);
 
-void UiMainWindow::showEvent(QShowEvent* event)
-{
-  emit signalOpened();
-  event->accept();
-}
-
-void UiMainWindow::closeEvent(QCloseEvent* event)
-{
-  emit signalClosed();
-  event->accept();
+  a->blockSignals(true);
+  a->setValue(aValue);
+  a->blockSignals(false);
 }

@@ -35,8 +35,8 @@ public:
   void closeEvent(QCloseEvent* event) final;
 
   signals:
-  void opened();
-  void closed();
+  void signalOpened();
+  void signalClosed();
 };
 
 using UiMainWindowPtr = std::shared_ptr<UiMainWindow>;

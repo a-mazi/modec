@@ -50,7 +50,7 @@ void UiExecutor::attachVideoDevice(const char* videoDevice_)
   videoDevice = videoDevice_;
 }
 
-void UiExecutor::mainWindowOpened()
+void UiExecutor::slotMainWindowOpened()
 {
   std::lock_guard<std::mutex> processingControlLock{processingControl};
   if ((!isMotionDetectorRunning) && (videoDevice != nullptr))
@@ -65,7 +65,7 @@ void UiExecutor::mainWindowOpened()
   }
 }
 
-void UiExecutor::mainWindowClosed()
+void UiExecutor::slotMainWindowClosed()
 {
   std::lock_guard<std::mutex> processingControlLock{processingControl};
   if (isMotionDetectorRunning)
@@ -81,13 +81,13 @@ void UiExecutor::mainWindowClosed()
   uiSettingsWindow->close();
 }
 
-void UiExecutor::showSettingsWindow(bool isTriggered)
+void UiExecutor::slotShowSettingsWindow(bool isTriggered)
 {
   std::lock_guard<std::mutex> processingControlLock{processingControl};
   uiSettingsWindow->show();
 }
 
-void UiExecutor::alphaChange(double value)
+void UiExecutor::slotAlphaChange(double value)
 {
 std::lock_guard<std::mutex> processingControlLock{processingControl};
   auto motionDetector = motionDetectorLink.lock();
@@ -134,8 +134,8 @@ void UiExecutor::showFrame(Watcher::FrameId frameId, cv::Mat& frame)
 void UiExecutor::setupUiConnections()
 {
   uiMainWindow->videoDisplay->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-  QObject::connect(uiMainWindow.get(), &UiMainWindow::opened, this, &UiExecutor::mainWindowOpened);
-  QObject::connect(uiMainWindow.get(), &UiMainWindow::closed, this, &UiExecutor::mainWindowClosed);
-  QObject::connect(&uiMainWindow->actionShowSettingsWindow, &QAction::triggered, this, &UiExecutor::showSettingsWindow);
-  QObject::connect(uiSettingsWindow.get(), &UiSettingsWindow::alphaChanged, this, &UiExecutor::alphaChange);
+  QObject::connect(uiMainWindow.get(), &UiMainWindow::signalOpened, this, &UiExecutor::slotMainWindowOpened);
+  QObject::connect(uiMainWindow.get(), &UiMainWindow::signalClosed, this, &UiExecutor::slotMainWindowClosed);
+  QObject::connect(&uiMainWindow->actionShowSettingsWindow, &QAction::triggered, this, &UiExecutor::slotShowSettingsWindow);
+  QObject::connect(uiSettingsWindow.get(), &UiSettingsWindow::signalAlphaChanged, this, &UiExecutor::slotAlphaChange);
 }
