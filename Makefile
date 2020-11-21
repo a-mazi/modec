@@ -76,13 +76,24 @@ ut:          CXXFLAGS += -DLOGLEVEL=4 -DUT_BUILD
 ut:          $(INC_GUI)
 ut:          $(BIN_UT)
 
+cov:         CXXFLAGS += --coverage
+cov:         LNKFLAGS += --coverage
+cov:         app_debug
+
 utcov:       CXXFLAGS += --coverage
 utcov:       LNKFLAGS += --coverage
 utcov:       ut
 	$(BIN_UT)
+
+covreport:
 	@mkdir -p $(DEBDIR)/$(COVDIR)
 	lcov --rc lcov_branch_coverage=1 --capture --directory $(DEBDIR)/$(TMPDIR) --output-file $(DEBDIR)/$(COVDIR)/coverage.info
+	lcov --rc lcov_branch_coverage=1 --remove $(DEBDIR)/$(COVDIR)/coverage.info --output-file $(DEBDIR)/$(COVDIR)/coverage.info '*/inc/*' '/usr/*' '*/mo/*'
 	genhtml $(DEBDIR)/$(COVDIR)/coverage.info --branch-coverage --output-directory $(DEBDIR)/$(COVDIR)
+
+prof:       CXXFLAGS += -pg
+prof:       LNKFLAGS += -pg
+prof:       app_debug
 
 
 $(RELDIR)/%: $(OBJ_APP_MO_RELEASE) $(OBJ_APP_MODU_RELEASE) $(RELDIR)/$(TMPDIR)/$(APPDIR)/%.o

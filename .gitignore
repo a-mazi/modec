@@ -6,3 +6,4 @@ debug/
 inc/ui/
 src/mo/
 *.orig
+gmon.out
