@@ -26,3 +26,4 @@ public:
 };
 
 using DisplayPtr = std::shared_ptr<Display>;
+using DisplayWeakPtr = std::weak_ptr<Display>;

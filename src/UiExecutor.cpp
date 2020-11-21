@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 #include <opencv2/imgproc.hpp>
+#include <cassert>
 #include <Log.h>
 #include <UiExecutor.h>
 
@@ -28,6 +29,8 @@ UiExecutor::UiExecutor(const UiMainWindowPtr& uiMainWindow_, const UiSettingsWin
   motionFrameId{0},
   decisionWeight{0}
 {
+  assert(uiMainWindow);
+  assert(uiSettingsWindow);
   setupUiConnections();
 }
 
@@ -50,24 +53,30 @@ void UiExecutor::attachVideoDevice(const char* videoDevice_)
 void UiExecutor::mainWindowOpened()
 {
   std::lock_guard<std::mutex> processingControlLock{processingControl};
-  if ((!isMotionDetectorRunning) && (!motionDetectorLink.expired()) && (videoDevice != nullptr))
+  if ((!isMotionDetectorRunning) && (videoDevice != nullptr))
   {
     auto motionDetector = motionDetectorLink.lock();
-    motionDetector->openVideo(videoDevice);
-    motionDetector->start();
-    isMotionDetectorRunning = true;
+    if (motionDetector)
+    {
+      motionDetector->openVideo(videoDevice);
+      motionDetector->start();
+      isMotionDetectorRunning = true;
+    }
   }
 }
 
 void UiExecutor::mainWindowClosed()
 {
   std::lock_guard<std::mutex> processingControlLock{processingControl};
-  if ((isMotionDetectorRunning) && (!motionDetectorLink.expired()))
+  if (isMotionDetectorRunning)
   {
     auto motionDetector = motionDetectorLink.lock();
-    motionDetector->stop();
-    motionDetector->closeVideo();
-    isMotionDetectorRunning = false;
+    if (motionDetector)
+    {
+      motionDetector->stop();
+      motionDetector->closeVideo();
+      isMotionDetectorRunning = false;
+    }
   }
   uiSettingsWindow->close();
 }
@@ -81,9 +90,9 @@ void UiExecutor::showSettingsWindow(bool isTriggered)
 void UiExecutor::alphaChange(double value)
 {
 std::lock_guard<std::mutex> processingControlLock{processingControl};
-  if (!motionDetectorLink.expired())
+  auto motionDetector = motionDetectorLink.lock();
+  if (motionDetector)
   {
-    auto motionDetector = motionDetectorLink.lock();
     motionDetector->setAlpha(value);
   }
 }

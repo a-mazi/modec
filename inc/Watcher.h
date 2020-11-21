@@ -29,3 +29,4 @@ public:
 };
 
 using WatcherPtr = std::shared_ptr<Watcher>;
+using WatcherWeakPtr = std::weak_ptr<Watcher>;

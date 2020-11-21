@@ -118,9 +118,9 @@ void MotionDetector::mainLoop()
 
       processingControlLock.unlock();
 
-      if (!watcherLink.expired())
+      auto watcher = watcherLink.lock();
+      if (watcher)
       {
-        auto watcher = watcherLink.lock();
         watcher->notifyMarkers(frameId, detectedCountours);
         for(unsigned int countourNo = 0; countourNo < detectedCountours; countourNo++)
         {
@@ -133,9 +133,9 @@ void MotionDetector::mainLoop()
         }
       }
 
-      if (!displayLink.expired())
+      auto display = displayLink.lock();
+      if (display)
       {
-        auto display = displayLink.lock();
         display->showFrame(frameId, toDisplay);
       }
     }

@@ -41,8 +41,8 @@ public:
   void setAlpha(double value);
 
 private:
-  std::weak_ptr<Watcher> watcherLink;
-  std::weak_ptr<Display> displayLink;
+  WatcherWeakPtr watcherLink;
+  DisplayWeakPtr displayLink;
   cv::VideoCapture video;
   cv::Mat referenceFrame;
 
@@ -56,3 +56,4 @@ private:
 };
 
 using MotionDetectorPtr = std::shared_ptr<MotionDetector>;
+using MotionDetectorWeakPtr = std::weak_ptr<MotionDetector>;

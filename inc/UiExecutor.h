@@ -48,7 +48,7 @@ private:
 
   UiMainWindowPtr uiMainWindow;
   UiSettingsWindowPtr uiSettingsWindow;
-  std::weak_ptr<MotionDetector> motionDetectorLink;
+  MotionDetectorWeakPtr motionDetectorLink;
 
   std::mutex processingControl;
   bool isMotionDetectorRunning;
